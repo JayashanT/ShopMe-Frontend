@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+import * as actions from '../../Stores/Actions/Index';
+
 import './Blog.css';
 import logo from '../../Assets/logo.png';
 import '../../bootstrap-3.3.7-dist/css/bootstrap.min.css';
@@ -21,9 +24,15 @@ class secondtab extends Component{
             <div className="b">
                 <nav>
                         <div className='row'>
-                        <div className='col'><img src={logo}/></div>    
-                        <div className='col col-md-8'><input type="text" placeholder="Enter Your Address"className='form-control 'onClick={this.try1}/></div> 
-                        <div className=''><input type="button" name="search" value="Show Products" onClick={this.try2} /></div>                         
+                        <div className='col col-md-3'><img src={logo}/></div>
+                        
+                        <div className='col col-md-9'>
+                        <div className="form-group has-feedback">
+                            <input type="text" placeholder="Enter Your Address"className='form-control 'onClick={this.try1} value={this.props.Address}/>
+                                <i class="glyphicon glyphicon-map-marker form-control-feedback"></i>
+                        </div>
+                        </div>
+                        <div className=''><input type="button" name="search" value="Show Products" onClick={this.try2} /></div>
                         </div>
                 </nav>
                   
@@ -31,4 +40,9 @@ class secondtab extends Component{
         );
     }    
 }
-export default withRouter(secondtab);
+const mapStateToProps=state=>{
+    return{
+        Address:state.location.address
+    }
+  }
+export default withRouter(connect(mapStateToProps,null)(secondtab));
