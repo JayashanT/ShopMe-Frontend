@@ -1,25 +1,23 @@
 import React, { Component } from 'react';
-import Product from './Product';
+import Shop from './Shop';
 import Title from "./Title";
 import {ProductConsumer,ProductProvider} from '../context';
 
-
-class ProductList extends Component {
+class ShopList extends Component {
     
     render() {
         
           return (
             <ProductProvider>
             <React.Fragment>
-                <div className="py-5" style={{height:'100%' ,width:'100%'}}>
+                <div className="py-5">
                   <div className="container">
-                    <Title name="our" title="products"/>
-
+                    <Title name="our" title="Shopes"/>
                     <div className="row"> 
                     <ProductConsumer>
                       {value=>{
-                       return value.products.map( product =>{
-                         return <Product key={product.id} product ={product}/>;
+                       return value.shopes.map( shop =>{
+                         return <Shop key={shop.sid} shop ={shop}/>;
                        }
 
                        )
@@ -37,4 +35,4 @@ class ProductList extends Component {
     }
 }
 
-export default ProductList;
+export default ShopList;

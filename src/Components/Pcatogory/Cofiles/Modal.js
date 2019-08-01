@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import {ProductConsumer} from '../context';
+import {ProductConsumer,ProductProvider} from '../context';
 import {ButtonContainer} from './Button';
 import {Link} from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom';
 class Modal extends Component {
     render() {
         return (
+            <ProductProvider>
             <ProductConsumer>
                 {(value)=>{
                     const{modalOpen,closeModal}= value;
@@ -28,7 +29,7 @@ class Modal extends Component {
                             <img src={img} className="img-fluid" alt="product"/> 
                              <h5>{title}</h5>
                              <h5 className="text-muted">price : LKR {price}</h5>
-                             <Link to='/'> 
+                             <Link to='/ProductList'> 
                              <ButtonContainer onClick={()=>closeModal()}>
                                 continue shopping
                              </ButtonContainer>
@@ -49,6 +50,7 @@ class Modal extends Component {
                     }
                 }}
             </ProductConsumer>
+            </ProductProvider>
         );
     }
 }

@@ -2,7 +2,6 @@ import React,{Component} from "react";
 import {Link,withRouter} from 'react-router-dom';
 import Select from 'react-select';
 import "./Signup.css";
-//import axios from 'axios';
 import {connect} from 'react-redux';
 import * as actions from '../../Stores/Actions/Index';
 
@@ -31,10 +30,6 @@ class Signup extends Component{
             email:null,
             password:null,
             confirmPassword:null,
-            shopLocation:{
-                lat:null,
-                lng:null
-            },
             mobileNumber:null,
             shopname:null,
             accNo:null,
@@ -46,10 +41,6 @@ class Signup extends Component{
                 email:"",
                 password:"",
                 confirmPassword:"",
-                shopLocation:{
-                    lat:"",
-                    lng:""
-                },
                 mobileNumber:"",
                 shopname:"",
                 accNo:"",
@@ -75,16 +66,11 @@ class Signup extends Component{
 
 
         }
-       /* axios.post('https://localhost:44314/api/customers',formdetails)
-        .then(response=>{
-            console.log(response);
-        });*/
     }
    
 
     handleSubmit= (event)=>{
         event.preventDefault();
-        //this.props.onAuth(this.state.email,this.state.formdetails.password.value);
 
         if(formValid(this.state)){
             console.log(
@@ -108,7 +94,14 @@ SubmitHandeler= (event)=>{
         this.state.password,
         this.state.firstName,
         this.state.lastName,
-        "signUp"
+        this.props.lat,
+        this.props.lng,
+        this.props.usertype,
+        this.state.mobileNumber,
+        this.state.shopname,
+        this.state.accNo,
+        this.state.vhno,
+        this.state.vehicle
         );
 };
 setLocation=()=>{
@@ -358,13 +351,15 @@ return(
 const mapStateToProps=state=>{
     return{
       usertype:state.auth.userType,
-      Address:state.location.address
+      Address:state.location.address,
+      lng:state.location.lngValue,
+      lat:state.location.latValue
     }
   }
 
 const mapDispatchToProps=dispatch=>{
     return{
-        onAuth:(email,password,firatName,lastName,isSignInUp)=>dispatch(actions.auth(email,password,firatName,lastName,isSignInUp))
+        onAuth:(email,password,firstName,lastName,lat,lng,userType,mobileno,shopname,accno,vhno,vehicle)=>dispatch(actions.auth(email,password,firstName,lastName,lat,lng,userType,mobileno,shopname,accno,vhno,vehicle))
     };
 }
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Signup));
