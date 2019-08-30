@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import './Blog.css';
 import Footer from './Footer';
 import Firstnav from './firstnav';
 import { Route,Switch,Redirect} from 'react-router-dom';
 import Signup from '../../Components/Signup/Signup';
-import SignIn from '../../Components/Signin/Signin';
+import SignIn from '../../Components/SignIn/Signin';
 import BsignUp from '../../Components/ToSignup/BsignUp'
 import Home from './Home';
 import Profile from '../../Components/Profile/Profile';
@@ -16,7 +15,7 @@ import ProductList from '../../Components/Pcatogory/Cofiles/ProductList';
 import ShopList from '../../Components/Pcatogory/Cofiles/ShopList';
 import Details from '../../Components/Pcatogory/Cofiles/Details';
 import Cart from '../../Components/Pcatogory/Cofiles/Cart/Cart';
-import Logout from '../../Components/Signin/Logout/Logout';
+import Logout from '../../Components/SignIn/Logout/Logout';
 import OrderQueue from '../../Components/ShopView/OrderQueue';
 import AddProducts from '../../Components/ShopView/UploadForm';
 import Modal from '../../Components/Pcatogory/Cofiles/Modal';
@@ -29,9 +28,6 @@ import {ProductProvider} from '../../Components/Pcatogory/context';
 class Blog extends Component{
     constructor(props){
         super(props)
-        this.state={
-            lng:'12223',
-        }
     }
 
 
