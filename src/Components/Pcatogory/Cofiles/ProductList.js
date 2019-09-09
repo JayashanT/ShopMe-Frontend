@@ -3,38 +3,36 @@ import Product from './Product';
 import Title from "./Title";
 import {ProductConsumer,ProductProvider} from '../context';
 
-
 class ProductList extends Component {
-    
-    render() {
-        
-          return (
-            
-            <React.Fragment>
-                <div className="py-5" style={{height:'100%' ,width:'100%'}}>
-                  <div className="container">
-                    <Title name="our" title="products"/>
+  constructor(props){
+    super(props);
+  };
+  
+  render() {
+        return (
+          <React.Fragment>
+              <div className="py-5" style={{marginLeft:'20px'}}>
+                <div>
+                  <Title name="our" title="products"/>
+                  <div className='row'> 
+                    <div className='col md-4'>
+                  <ProductConsumer>
 
-                    <div className="row"> 
-                    <ProductConsumer>
-                      {value=>{
-                       return value.products.map( product =>{
-                         return <Product key={product.id} product ={product}/>;
-                       }
+                    {value=>{
+                      return value.detailProduct.map( product =>{
+                        return <Product key={product.id} product={product}/>;
+                      })
+                    }}
 
-                       )
-                      }}
-                    </ProductConsumer>
-                    </div>
+                  </ProductConsumer>
+                  </div>
                   </div>
                 </div>
-                
-            </React.Fragment>
-            
-              //<Product/> 
-            
-        );
-    }
+              </div>
+              
+          </React.Fragment>
+      );
+  }
 }
 
 export default ProductList;

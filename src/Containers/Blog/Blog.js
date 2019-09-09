@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import './Blog.css';
 import Footer from './Footer';
 import Firstnav from './firstnav';
 import { Route,Switch,Redirect} from 'react-router-dom';
 import Signup from '../../Components/Signup/Signup';
-import SignIn from '../../Components/Signin/Signin';
+import SignIn from '../../Components/SignIn/Signin';
 import BsignUp from '../../Components/ToSignup/BsignUp'
 import Home from './Home';
 import Profile from '../../Components/Profile/Profile';
@@ -16,46 +15,41 @@ import ProductList from '../../Components/Pcatogory/Cofiles/ProductList';
 import ShopList from '../../Components/Pcatogory/Cofiles/ShopList';
 import Details from '../../Components/Pcatogory/Cofiles/Details';
 import Cart from '../../Components/Pcatogory/Cofiles/Cart/Cart';
-import Logout from '../../Components/Signin/Logout/Logout';
+import Logout from '../../Components/SignIn/Logout/Logout';
 import OrderQueue from '../../Components/ShopView/OrderQueue';
 import AddProducts from '../../Components/ShopView/UploadForm';
 import Modal from '../../Components/Pcatogory/Cofiles/Modal';
 import Pindex from '../../Components/Pcatogory/Pindex';
 import Navbar from '../../Components/Pcatogory/Cofiles/Navbar';
 import {ProductProvider} from '../../Components/Pcatogory/context';
+import Inventory from '../../Components/ShopView/Inventory';
+import UpdateProduct from '../../Components/ShopView/EditProduct';
+import upload from '../../Components/ShopView/UploadF';
+import Spinner from '../../Containers/Spinner/Spinner_2';
 
 
 
 class Blog extends Component{
     constructor(props){
         super(props)
-        this.state={
-            lng:'12223',
-        }
     }
-
-
-// componentDidMount=()=>{
-//     switch(user){
-//        case customer:{return}
-//        case Seller:{}
-//        case Deliverer:{}     
-//     }
-// }
-
-    
+  
     render(){
         let routes=(
         <Switch>
             <Route path="/"exact component={Home}/>
             <Route path="/Signin" exact component={SignIn}/>
-            <Route path="/seluser"exact component={BsignUp}/>
+            <Route path="/Signuprole"exact component={BsignUp}/>
             <Route path="/SignUp" component={Signup}/>            
             <Route path="/Profile" exact component={Profile}/>
-            <Route path="/Addaproduct" exact component={AddProducts}/>
+            <Route path="/AddNewProduct" exact component={AddProducts}/>
             <Route path="/map" component={Map}/>
             <Route path="/logout" component={Logout}/>
-            <Route path="/LogAsSeller"exact component={OrderQueue}/>
+            <Route path="/Seller_login"exact component={OrderQueue}/>
+            <Route path="/Inventory"exact component={Inventory}/>
+            <Route path="/UpdateProduct" exact component={UpdateProduct}/>
+            <Route path="/upload" exact component={upload}/>
+            <Route path="/spinner" exact component={Spinner}/>
         </Switch>
         
             
@@ -66,9 +60,13 @@ class Blog extends Component{
                     <Route path="/"exact component={Home}/>
                     <Route path="/Signin" exact component={SignIn}/>
                     <Route path="/Profile" exact component={Profile}/>
-
+                    <Route path="/AddNewProduct" exact component={AddProducts}/>
                     <Route path="/logout" component={Logout}/>
-                    <Route path="/LogAsSeller"exact component={OrderQueue}/>
+                    <Route path="/Seller_login"exact component={OrderQueue}/>
+                    <Route path="/Inventory"exact component={Inventory}/>
+                    <Route path="/UpdateProduct" exact component={UpdateProduct}/>
+                    <Route path="/upload" exact component={upload}/>
+                    <Route path="/spinner" exact component={Spinner}/>
                     <Redirect to="/"/>
                 </Switch>
             );  
@@ -80,7 +78,11 @@ class Blog extends Component{
                     <Route path="/Profile" exact component={Profile}/>
                     <Route path="/map" component={Map}/>
                     <Route path="/logout" component={Logout}/>
-                    <Route path="/LogAsSeller"exact component={OrderQueue}/>
+                    <Route path="/Seller_login"exact component={OrderQueue}/>
+                    <Route path="/Inventory"exact component={Inventory}/>
+                    <Route path="/UpdateProduct" exact component={UpdateProduct}/>
+                    <Route path="/upload" exact component={upload}/>
+                    <Route path="/spinner" exact component={Spinner}/>
                     <Redirect to="/"/>
                 </Switch>
             );
@@ -89,12 +91,19 @@ class Blog extends Component{
                 <Switch>
                     <Route path="/"exact component={Home}/>
                     <Route path="/Signin" exact component={SignIn}/>
-                    <Route path="/seluser"exact component={BsignUp}/>
+                    <Route path="/Signuprole"exact component={BsignUp}/>
                     <Route path="/SignUp" component={Signup}/>
                     <Route path="/Profile" exact component={Profile}/>
                     <Route path="/map" component={Map}/>
                     <Route path="/logout" component={Logout}/>
-                    <Route path="/AddProduct" exact component={AddProducts}/>
+                    <Route path="/AddNewProduct" exact component={AddProducts}/>
+                    <Route path="/Inventory"exact component={Inventory}/>
+                    <Route path="/UpdateProduct" exact component={UpdateProduct}/>
+                    <Route path="/upload" exact component={upload}/>
+                    <Route path="/spinner" exact component={Spinner}/>
+                    <ProductProvider>
+                       <Pindex/>
+                    </ProductProvider>
                     <Redirect to="/"/>
                 </Switch>
             );
@@ -104,14 +113,18 @@ class Blog extends Component{
                 <Switch>
                       <Route path="/"exact component={Home}/>
                         <Route path="/Signin" exact component={SignIn}/>
-                        <Route path="/seluser"exact component={BsignUp}/>
+                        <Route path="/Signuprole"exact component={BsignUp}/>
                         <Route path="/SignUp" component={Signup}/>
                         <Route path="/Profile" exact component={Profile}/>
                         <Route path="/map" component={Map}/>
                         <Route path="/logout" component={Logout}/>
-                        <Route path="/LogAsSeller"exact component={OrderQueue}/>
-                        <Route path="/AddProduct" exact component={AddProducts}/>
-                        
+                        <Route path="/Seller_login"exact component={OrderQueue}/>
+                        <Route path="/AddNewProduct" exact component={AddProducts}/>
+                        <Route path="/Inventory"exact component={Inventory}/>
+                        <Route path="/UpdateProduct" exact component={UpdateProduct}/>
+                        <Route path="/upload" exact component={upload}/>
+                        <Route path="/spinner" exact component={Spinner}/>
+      
                 </Switch>
                 </React.Fragment>
              );
@@ -122,10 +135,10 @@ class Blog extends Component{
                <Firstnav
                     isAuth={this.props.isAuthenticated}
                     userT={this.props.user}/>
-                    <ProductProvider>
+                    {/* <ProductProvider>
                        <Pindex/>
-                    </ProductProvider>
-                    {routes}               
+                    </ProductProvider> */}
+                    {routes}         
                 <Footer/>
             </div>
             

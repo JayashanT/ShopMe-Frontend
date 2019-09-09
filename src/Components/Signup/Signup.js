@@ -1,365 +1,213 @@
 import React,{Component} from "react";
-import {Link,withRouter} from 'react-router-dom';
+import {Link,withRouter,Redirect} from 'react-router-dom';
 import Select from 'react-select';
 import "./Signup.css";
 import {connect} from 'react-redux';
 import * as actions from '../../Stores/Actions/Index';
+import { Field, reduxForm } from 'redux-form';
+import submit from './submit';
+import { relative } from "path";
+import map from '../map/Map';
+import Spinner from '../../Containers/Spinner/Spinner_2';
 
-const emailRegex=RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+const renderField = ({ input,label,type,click,value,meta: { touched, error, warning }}) => (
+    <div className='row' style={{marginBottom:10,display:'flex'}}>
+        <div className='col' style={{}}><label style={{color:'#ffff',fontWeight:'bold',columnWidth:120,paddingLeft:30}}>{label}</label></div>
+        <div className='col col-xs-7 col-sm-7 col-lg-7' >
+            <input {...input} placeholder={label} type={type} value={value} onclick={click} style={{alignSelf:'center',marginLeft:relative,width:200}}/>
+          {touched && ((error && <span style={{color:'red',backgroundColor:'white',fontWeight:'bold'}}>{error}</span>) ||(warning && <span>{warning}</span>))}
+        </div>
+    </div>
+  )
 
-const formValid=({formErrors,...rest})=>{
-    let valid=true;
-    Object.values(formErrors).forEach(val=>{
-        val.length>0 &&(valid=false)
-    });
-Object.values(rest).forEach(val=>{
-    val=null && (valid=false);
-});
 
-
-    return valid;
-}
+  const required=value=> value ? undefined:'Required';
+  const isValidEmail=value=> value && !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(value) ? 'Invalid email address':undefined;
+  const isValidPassword=value=> value && !/^(?=.{10,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/i.test(value) ? 'Required UPPERCASE, lowercase, digit, symbol and minimum 10 characters ':undefined;
+  const passwordMatch=(value,allValues)=> value!==allValues.Password ? 'Passwords do not Match':undefined;
+  const isMobile=(value)=> value && !/^[0-9]{10}$/i.test(value) ? "Invalid mobile number":undefined;
 
 class Signup extends Component{
-
     constructor(props){
-        super(props);
-        this.state={
-            firstName:null,
-            lastName:null,
-            email:null,
-            password:null,
-            confirmPassword:null,
-            mobileNumber:null,
-            shopname:null,
-            accNo:null,
-            VHno:null,
-            Vehicle:null,
-            formErrors:{
-                firstName:"",
-                lastName:"",
-                email:"",
-                password:"",
-                confirmPassword:"",
-                mobileNumber:"",
-                shopname:"",
-                accNo:"",
-                VHno:"",
-                Vehicle:"",
-            },
-            isLocationSet: false,
+        super(props);}
 
-        };
-    }
-
-    submitDataHandler =()=>{
-        const formdetails={
-            firstName:this.state.firstname,
-            lastName:this.state.lastName,
-            email:this.state.email,
-            password:this.state.password,
-            confirmPassword:this.state.confirmPassword,
-            addressLine1:this.state.addressLine1,
-            addressLine2:this.state.addressLine2,
-            city:this.state.city,
-            zipCode:this.UNSAFE_componentWillMount.state.zipCode
-
-
-        }
-    }
-   
-
-    handleSubmit= (event)=>{
-        event.preventDefault();
-
-        if(formValid(this.state)){
-            console.log(
-                `----SUBMITTING----
-            First Name: ${this.state.firstName}
-            Last Name: ${this.state.lastName}
-            Email: ${this.state.email}
-            password: ${this.state.password}
-            Confirm Password: ${this.state.confirmPassword}
-            
-            `)
-        }else{
-            console.error(`FORM INVALID=DISPLAY ERROR MESSAGE`);
-        }
-};
-
-SubmitHandeler= (event)=>{
-    event.preventDefault();
-    this.props.onAuth(
-        this.state.email,
-        this.state.password,
-        this.state.firstName,
-        this.state.lastName,
-        this.props.lat,
-        this.props.lng,
-        this.props.usertype,
-        this.state.mobileNumber,
-        this.state.shopname,
-        this.state.accNo,
-        this.state.vhno,
-        this.state.vehicle
-        );
-};
-setLocation=()=>{
-    this.setState({isLocationSet:true})
+ setLocation=()=>{
+    // this.setState({isLocationSet:true})
     this.props.history.push('/map');  
 }
-
-
-    handleChange=e=>{
-        e.preventDefault();
-        const{name,value}=e.target;
-        let formErrors=this.state.formErrors;
     
-            switch(name){
-            case "firatName":
-            formErrors.firstName=
-            value.length<2 ?"minimum 2 characters required":"";
-            break;
 
-            case "lastName":
-            formErrors.lastName=
-            value.length<2 
-            ?"minimum 2 characters required":"";
-            break;
-
-            case "email":
-            formErrors.email=
-            emailRegex.test(value) 
-            ?""
-            :"Invalid email address";
-            break;
-
-            case "password":
-            formErrors.password=
-            value.length<6 
-            ?"minimum 6 characters required":"";
-            break;
-
-            case "confirmPassword":
-            formErrors.confirmPassword=(formErrors.confirmPassword===formErrors.password) ? "" : "minimum 6 characters required";
-            break;
-             
-            default:
-            break;
+render() {
+    let authRedirect;
+    if(this.props.isAuthenticated){
+        authRedirect=<Redirect to="/"/>
     }
-    this.setState({formErrors,[name]:value},()=>console.log(this.state));
-    };
-render(){
-    const{formErrors}=this.state;
-
-    const vehicles = [
-        { label: "Motor Bicycle", value: "motorbicyle" },
-        { label: "Three wheel", value: "threewheel" },
-      ];
-
+    const vehicles = ["Motor Bicycle", "Three Wheel"];
+    const {handleSubmit, pristine, reset, submitting}=this.props;
+    
 return(
 <div className="wrapper">
-    <div className="form-wrapper">
-    <h1>Create Account</h1>
-    <form onSubmit={this.hadleSubmit} novalidate>
-        
-            <div>
-            <div className="firstName">
-            <label htmlFor="firstName">First Name</label>
-
-            <input
-                type="text" 
-                className={formErrors.firstName.length>0?"error":null}
-                placeholder="First Name" 
-
-                name="firstName"
-                noValidate
-                onChange={this.handleChange}
-            />
-            {formErrors.firstName.length>0 &&(
-                <span className="errorMessage">{formErrors.firstName}</span>
-            )}
+    <div className="wrapForm">
+    {this.props.isloading ? <Spinner/> : <div>
+    <h1 style={{fontWeight:'bold' ,color:'white'}}>Create Account</h1>
+    
+    <div>
+    
+    {
+    this.props.usertype=="Seller" ? 
+        <div className='col col-md-12'>
+            <input type="text" placeholder="Click to setup shop location" className='form-control 'onClick={this.setLocation} value={this.props.Address}/>
+            <i class="glyphicon glyphicon-map-marker form-control-feedback"></i>
         </div>
-
-        <div className="lastName">
-            <label htmlFor="lastName">Last Name</label>
-                <input
-                    type="text" 
-                    className={formErrors.lastName.length>0?"error":null}
-                    placeholder="Last Name" 
-
-                    name="lastName"
-                    noValidate
-                    onChange={this.handleChange}
+     :null
+}
+    </div>
+    <form onSubmit={handleSubmit(submit)}>
+        <Field
+            name="FirstName"
+            type="text"
+            component={renderField}
+            label="First Name"
+            validate={[required]}
+            click={null}
+            value={null}
+        />
+      <Field
+            name="LastName"
+            type="text"
+            component={renderField}
+            label="Last Name"
+            click={null}
+            value={null}
+            validate={[required]}
+      />
+        
+        {this.props.usertype=="Seller" ?
+            <div>
+                <Field
+                    name="ShopName"
+                    type="text"
+                    component={renderField}
+                    label="Shop Name"
+                    click={null}
+                    value={null}
+                    validate={[required]}
                 />
-            {formErrors.lastName.length>0 &&(
-                <span className="errorMessage">{formErrors.lastName}</span>
-            )}
-        </div>
-        </div>
-        
-        {
-            this.props.usertype=="Seller" ?
-            <div>
-                        <div className="firstName">
-                    <label htmlFor="shopname">Shop Name</label>
+                <Field
+                    name="AccountNo"
+                    type="text"
+                    component={renderField}
+                    label="Account No"
+                    click={null}
+                    value={null}
+                    validate={[required]}
+                />
+                <Field
+                    name="Address"
+                    type="text"
+                    component={renderField}
+                    label="Address"
+                    click={null}
+                    value={null}
+                    validate={[required]}
+                />
+                {/* <Field name = "eventLocation"
+                    values="gghhgghh"
+                    component = {renderLatLng}
+                     /> */}
 
-                    <input
-                        type="text" 
-                        className={formErrors.firstName.length>0?"error":null}
-                        placeholder="Shop Name" 
-
-                        name="shopname"
-                        noValidate
-                        onChange={this.handleChange}
-                    />
-                    {formErrors.firstName.length>0 &&(
-                        <span className="errorMessage">{formErrors.firstName}</span>
-                    )}
-                    </div>
-
-                    <div className="accNo">
-                    <label htmlFor="accNo">Account No.</label>
-
-                    <input
-                        type="text" 
-                        className={formErrors.firstName.length>0?"error":null}
-                        placeholder="Account No." 
-
-                        name="mobileNumber"
-                        noValidate
-                        onChange={this.handleChange}
-                    />
-                    {formErrors.firstName.length>0 &&(
-                        <span className="errorMessage">{formErrors.firstName}</span>
-                    )}
-                    </div>
+                {/* <p>{this.props.Address}</p> */}
             </div>
-            
-            :null}
+                :null}
 
-            {this.props.usertype=="Deliverer" ?
+        {this.props.usertype=="Deliverer" ?
+            <div>
+                <Field
+                    name="VehicleNo"
+                    type="text"
+                    component={renderField}
+                    label="Vehicle No"
+                    click={null}
+                    value={null}
+                    validate={[required]}
+                />
+                <div className='row' style={{marginBottom:10,display:'flex'}}>
+                <label style={{color:'#ffff',fontWeight:'bold',columnWidth:140,paddingLeft:30}}>Vehicle Type</label>
                 <div>
-                        <div className="VHno">
-                                <label htmlFor="VHno">Vehicle No.</label>
-
-                                <input
-                                    type="text" 
-                                    className={formErrors.firstName.length>0?"error":null}
-                                    placeholder="Vehicle No." 
-
-                                    name="VHno"
-                                    noValidate
-                                    onChange={this.handleChange}
-                                />
-                                {formErrors.firstName.length>0 &&(
-                                    <span className="errorMessage">{formErrors.firstName}</span>
-                                )}
-                        </div>
-                        <Select options={ vehicles } />
-
-                    </div> :null}
-        
-        <div className="mobileNumber">
-            <label htmlFor="mobileNumber">Mobile No.</label>
-
-            <input
-                type="text" 
-                className={formErrors.firstName.length>0?"error":null}
-                placeholder="Mobile No." 
-
-                name="mobileNumber"
-                noValidate
-                onChange={this.handleChange}
-            />
-            {formErrors.firstName.length>0 &&(
-                <span className="errorMessage">{formErrors.firstName}</span>
-            )}
-        </div>
-
-        <div className="email">
-            <label htmlFor="email">Email</label>
-                <input
-                    type="email" 
-                    className={formErrors.email.length>0?"error":null}
-                    placeholder="Email" 
-
-                    name="email"
-                    noValidate
-                    onChange={this.handleChange}
-                />
-            {formErrors.email.length>0 &&(
-                <span className="errorMessage">{formErrors.email}</span>
-            )}
-        </div>
-
-        <div className="password">
-            <label htmlFor="password">Password</label>
-                <input
-                    type="password" 
-                    className={formErrors.password.length>0?"error":null}
-                    placeholder="Password" 
-
-                    name="password"
-                    noValidate
-                    onChange={this.handleChange}
-                />
-            {formErrors.password.length>0 &&(
-                <span className="errorMessage">{formErrors.password}</span>
-            )}
-        </div>
-
-        <div className="confirmPassword">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-                <input
-                    type="Password" 
-                    className={formErrors.password.length>0?"error":null}
-                    placeholder="Confirm Password" 
-
-                    name="confirmPassword"
-                    noValidate
-                    onChange={this.handleChange}
-                />
-            {formErrors.password.length>0 &&(
-                <span className="errorMessage">{formErrors.confirmPassword}</span>
-            )}
-        </div>
-
-        {
-            this.props.usertype=="Seller" ? 
-                <div className='col col-md-12'>
-                    <input type="text" placeholder="Click to setup shop location" className='form-control 'onClick={this.setLocation} value={this.props.Address}/>
-                    <i class="glyphicon glyphicon-map-marker form-control-feedback"></i>
+                <Field name="VehicleType" component="select" style={{alignSelf:'center',marginLeft:relative,height:37,width:200}}>
+                <option value="">Select a vehicle...</option>
+                    {vehicles.map(Option => (
+                        <option value={Option} key={Option}>
+                    {Option}
+                </option>
+                        
+                    ))}
+                </Field>
                 </div>
-             :null
-        }
+                </div>
+                </div> :null}
         
-         
+                <Field
+                    name="MobileNumber"
+                    type="text"
+                    component={renderField}
+                    label="Mobile No"
+                    click={null}
+                    value={null}
+                    validate={[required,isMobile]}
+                />
 
-        <div className="createAccount">
-            <button type="submit" onClick={this.SubmitHandeler}>SUBMIT</button>
-            <Link to="/Signin"><small>Already have an Account</small></Link>
+                <Field
+                    name="Email"
+                    type="text"
+                    component={renderField}
+                    label="Email"
+                    click={null}
+                    value={null}
+                    validate={[required,isValidEmail]}
+                />
+                <Field
+                    name="Password"
+                    type="password"
+                    component={renderField}
+                    label="Password"
+                    click={null}
+                    value={null}
+                    validate={[required,isValidPassword]}
+                />
+
+                <Field
+                    name="ConfirmPassword"
+                    type="password"
+                    component={renderField}
+                    label="Confirm Password"
+                    click={null}
+                    value={null}
+                    validate={[required,passwordMatch]}
+                />
+         <div style={{alignContent:'center',marginLeft:'30%'}}>
+            <button type="submit" className="btn btn-default" disabled={submitting}>SUBMIT</button>
+            <div><Link to="/Signin"><small>Already have an Account</small></Link></div>
         </div>   
     </form>
+    </div>}
 </div>
 </div>
 );
-}
-
-}
+};
+    }
+    
 
 const mapStateToProps=state=>{
     return{
       usertype:state.auth.userType,
       Address:state.location.address,
       lng:state.location.lngValue,
-      lat:state.location.latValue
+      lat:state.location.latValue,
+      isloading:state.auth.loading
     }
   }
 
-const mapDispatchToProps=dispatch=>{
-    return{
-        onAuth:(email,password,firstName,lastName,lat,lng,userType,mobileno,shopname,accno,vhno,vehicle)=>dispatch(actions.auth(email,password,firstName,lastName,lat,lng,userType,mobileno,shopname,accno,vhno,vehicle))
-    };
-}
-export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Signup));
+  export default withRouter(connect(mapStateToProps,null)(reduxForm({
+    form: 'SignUp',
+  })(Signup)))
